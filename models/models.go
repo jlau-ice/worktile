@@ -14,9 +14,21 @@ type User struct {
 // WorkloadEntry 结构体用于 mission_addon_workload_entries 集合
 type WorkloadEntry struct {
 	ID          primitive.ObjectID `json:"id" bson:"_id"`
-	CreatedBy   string             `json:"created_by" bson:"created_by"`
 	Description string             `json:"description" bson:"description"`
 	Duration    float64            `json:"duration" bson:"duration"`
 	CreatedAt   int64              `json:"created_at" bson:"created_at"`
 	UpdatedAt   int64              `json:"updated_at" bson:"updated_at"`
+}
+
+type PaginatedWorkload struct {
+	Data       []WorkloadEntry `json:"data"`
+	Total      int64           `json:"total"`
+	PageSize   int             `json:"page_size"`
+	PageNumber int             `json:"page_number"`
+}
+
+type WorkloadDTO struct {
+	CreatedBy  string `json:"created_by" bson:"created_by"`
+	PageSize   int    `json:"page_size" bson:"page_size"`
+	PageNumber int    `json:"page_number" bson:"page_number"`
 }

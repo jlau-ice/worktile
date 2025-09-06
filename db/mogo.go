@@ -93,12 +93,19 @@ func GetUsersByName(name string) ([]models.User, error) {
 
 // GetWorkloadByUserID 根据用户ID查询工时记录
 // 修改时间戳处理逻辑 08b4cda935554d448bce24f65a5e3a8d
-func GetWorkloadByUserID(uid string) ([]models.WorkloadEntry, error) {
+func GetWorkloadByUserID(dto models.WorkloadDTO) ([]models.WorkloadEntry, int64, error) {
 	collection := Client.Database(dbName).Collection(workloadCol)
-	// 先检查集合中的数据
+
+	// 获取总记录数
+	total, err := collection.CountDocuments(context.TODO(), bson.M{"created_by": dto.CreatedBy})
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// 调试代码：检查集合总数和样本文档
 	count, err := collection.CountDocuments(context.TODO(), bson.M{})
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	fmt.Printf("工时记录集合总数: %d\n", count)
 	var sampleDoc bson.M
@@ -108,31 +115,45 @@ func GetWorkloadByUserID(uid string) ([]models.WorkloadEntry, error) {
 	} else {
 		fmt.Printf("样本文档结构: %+v\n", sampleDoc)
 	}
-	filter := bson.M{"created_by": uid}
+
+	// 调试代码：打印查询过滤器
+	filter := bson.M{"created_by": dto.CreatedBy}
 	fmt.Printf("查询过滤器: %+v\n", filter)
+
+	// **重点：在这里添加分页逻辑**
+	skip := int64((dto.PageNumber - 1) * dto.PageSize)
+	findOptions := options.Find()
+	findOptions.SetLimit(int64(dto.PageSize))
+	findOptions.SetSkip(skip)
+
+	// 调试代码：执行原始查询并打印结果（不带分页）
 	var rawResults []bson.M
 	cursor, err := collection.Find(context.TODO(), filter)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer cursor.Close(context.TODO())
 	if err = cursor.All(context.TODO(), &rawResults); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	fmt.Printf("原始查询找到 %d 条记录\n", len(rawResults))
 	for i, result := range rawResults {
 		fmt.Printf("记录 %d: %+v\n", i+1, result)
 	}
-	cursor2, err := collection.Find(context.TODO(), filter)
+
+	// **最终的查询：执行带分页的查询**
+	cursor2, err := collection.Find(context.TODO(), filter, findOptions) // **将 findOptions 作为参数传递**
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer cursor2.Close(context.TODO())
+
 	var entries []models.WorkloadEntry
 	if err = cursor2.All(context.TODO(), &entries); err != nil {
 		fmt.Printf("解码到结构体失败: %v\n", err)
-		return nil, err
+		return nil, 0, err
 	}
 	fmt.Printf("解码后得到 %d 条记录\n", len(entries))
-	return entries, nil
+
+	return entries, total, nil
 }
