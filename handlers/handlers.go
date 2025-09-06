@@ -26,9 +26,9 @@ func SearchUsersHandler(c echo.Context) error {
 
 // GetWorkloadHandler 处理 /api/workload/:uid 路由
 func GetWorkloadHandler(c echo.Context) error {
-	uid := c.Param("uid")
-	pageSizeStr := c.QueryParam("page_size")
-	pageNumberStr := c.QueryParam("page_number")
+	uid := c.QueryParam("uid")
+	pageSizeStr := c.QueryParam("pageSize")
+	pageNumberStr := c.QueryParam("pageNumber")
 	pageSize, err := strconv.Atoi(pageSizeStr)
 	if err != nil || pageSize <= 0 {
 		pageSize = 10
@@ -37,9 +37,8 @@ func GetWorkloadHandler(c echo.Context) error {
 	if err != nil || pageNumber <= 0 {
 		pageNumber = 1
 	}
-	// 3. 创建并填充 WorkloadDTO 实体
 	dto := models.WorkloadDTO{
-		CreatedBy:  uid, // 将 uid 赋值给 CreatedBy 字段
+		CreatedBy:  uid,
 		PageSize:   pageSize,
 		PageNumber: pageNumber,
 	}

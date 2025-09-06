@@ -18,6 +18,6 @@ func main() {
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
 	e.GET("/api/users", handlers.SearchUsersHandler)
-	e.GET("/api/workload/:uid", handlers.GetWorkloadHandler)
+	e.GET("/api/workload", handlers.GetWorkloadHandler)
 	log.Fatal(e.Start(":1323"))
 }
