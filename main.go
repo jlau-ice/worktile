@@ -13,10 +13,11 @@ func main() {
 	db.InitConnection()
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://127.0.0.1:5173"},
+		AllowOrigins: []string{"*"}, // 或者指定具体的前端域名，如 "http://localhost:3000"
+		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
 	e.GET("/api/users", handlers.SearchUsersHandler)
-	e.GET("/api/workload/:userID", handlers.GetWorkloadHandler)
+	e.GET("/api/workload/:uid", handlers.GetWorkloadHandler)
 	log.Fatal(e.Start(":1323"))
 }

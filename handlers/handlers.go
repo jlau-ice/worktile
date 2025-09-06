@@ -22,14 +22,12 @@ func SearchUsersHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, users)
 }
 
-// GetWorkloadHandler 处理 /api/workload/:userID 路由
+// GetWorkloadHandler 处理 /api/workload/:uid 路由
 func GetWorkloadHandler(c echo.Context) error {
-	userID := c.Param("userID")
-
-	entries, err := db.GetWorkloadByUserID(userID)
+	uid := c.Param("uid")
+	entries, err := db.GetWorkloadByUserID(uid)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}
-
 	return c.JSON(http.StatusOK, entries)
 }
