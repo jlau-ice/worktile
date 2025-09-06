@@ -7,21 +7,21 @@ import (
 	"strconv"
 	"worktile/worktile-query-server/db"
 	"worktile/worktile-query-server/models"
+	"worktile/worktile-query-server/response"
 )
 
 // SearchUsersHandler 处理 /api/users 路由
 func SearchUsersHandler(c echo.Context) error {
 	keyword := c.QueryParam("name")
 	if keyword == "" {
-		return c.JSON(http.StatusBadRequest, echo.Map{"error": "name参数不能为空"})
+		return response.Error(c, http.StatusBadRequest, "name参数不能为空")
 	}
 
 	users, err := db.GetUsersByName(keyword)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "查询用户失败"})
+		return response.Error(c, http.StatusInternalServerError, "查询用户失败")
 	}
-
-	return c.JSON(http.StatusOK, users)
+	return response.Success(c, users)
 }
 
 // GetWorkloadHandler 处理 /api/workload/:uid 路由
@@ -45,14 +45,13 @@ func GetWorkloadHandler(c echo.Context) error {
 	}
 	entries, total, err := db.GetWorkloadByUserID(dto)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+		return response.Error(c, http.StatusInternalServerError, "查询用户工作负载失败")
 	}
-	// 构建并返回 PaginatedWorkload 结构体
-	response := models.PaginatedWorkload{
+	paginatedWorkload := models.PaginatedWorkload{
 		Data:       entries,
 		Total:      total,
 		PageSize:   dto.PageSize,
 		PageNumber: dto.PageNumber,
 	}
-	return c.JSON(http.StatusOK, response)
+	return response.Success(c, paginatedWorkload)
 }
