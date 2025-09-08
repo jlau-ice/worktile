@@ -18,6 +18,7 @@ type WorkloadEntry struct {
 	Duration    float64            `json:"duration" bson:"duration"`
 	CreatedAt   int64              `json:"created_at" bson:"created_at"`
 	UpdatedAt   int64              `json:"updated_at" bson:"updated_at"`
+	ReportedAt  int64              `json:"reported_at" bson:"reported_at"`
 }
 
 type PaginatedWorkload struct {
