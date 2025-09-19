@@ -29,19 +29,16 @@ const (
 func InitConnection() {
 	// 移除 ServerAPI 配置
 	opts := options.Client().ApplyURI(dbURI)
-
 	var err error
 	Client, err = mongo.Connect(context.TODO(), opts)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	err = Client.Ping(context.TODO(), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("成功连接到 MongoDB!")
-
 	// 调试信息
 	db := Client.Database(dbName)
 	collections, err := db.ListCollectionNames(context.TODO(), bson.M{})
