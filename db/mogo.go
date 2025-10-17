@@ -70,25 +70,29 @@ func GetUsersByName(name string) ([]models.User, error) {
 // GetWorkloadByUserID 根据用户ID查询工时记录
 func GetWorkloadByUserID(dto models.WorkloadDTO) ([]models.WorkloadEntry, int64, error) {
 	collection := Client.Database(dbName).Collection(workloadCol)
+	// 构建过滤器
+	filter := bson.M{"created_by": dto.CreatedBy}
 	// 获取总记录数
-	total, err := collection.CountDocuments(context.TODO(), bson.M{"created_by": dto.CreatedBy})
+	total, err := collection.CountDocuments(context.TODO(), filter)
 	if err != nil {
 		return nil, 0, err
 	}
-	// 构建查询过滤器
-	filter := bson.M{"created_by": dto.CreatedBy}
-	// 构建分页选项
+
+	// 分页参数
 	skip := int64((dto.PageNumber - 1) * dto.PageSize)
-	findOptions := options.Find()
-	findOptions.SetLimit(int64(dto.PageSize))
-	findOptions.SetSkip(skip)
-	// 执行带分页的查询
+
+	// 查询选项：分页 + 排序
+	findOptions := options.Find().
+		SetLimit(int64(dto.PageSize)).
+		SetSkip(skip).
+		SetSort(bson.D{{Key: "reported_at", Value: -1}}) // 按 reported_at 降序排序（最新在前）
+	// 执行查询
 	cursor, err := collection.Find(context.TODO(), filter, findOptions)
 	if err != nil {
 		return nil, 0, err
 	}
 	defer cursor.Close(context.TODO())
-	// 将结果解码到实体
+	// 解析结果
 	var entries []models.WorkloadEntry
 	if err = cursor.All(context.TODO(), &entries); err != nil {
 		return nil, 0, err
