@@ -1,9 +1,10 @@
 package main
 
 import (
+	"testing"
+
 	"github.com/jlau-ice/gotils/log"
 	"github.com/jlau-ice/gotils/str"
-	"testing"
 )
 
 func TestGotils(t *testing.T) {

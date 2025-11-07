@@ -2,12 +2,14 @@
 package handlers
 
 import (
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
 	"worktile/worktile-query-server/db"
 	"worktile/worktile-query-server/models"
 	"worktile/worktile-query-server/response"
+
+	"github.com/jlau-ice/gotils/log"
+	"github.com/labstack/echo/v4"
 )
 
 // SearchUsersHandler 处理 /api/users 路由
@@ -16,7 +18,8 @@ func SearchUsersHandler(c echo.Context) error {
 	if keyword == "" {
 		return response.Error(c, http.StatusBadRequest, "name参数不能为空")
 	}
-
+	log.Info("search users keyword: " + keyword)
+	log.Info("search ip: " + c.Request().Host)
 	users, err := db.GetUsersByName(keyword)
 	if err != nil {
 		return response.Error(c, http.StatusInternalServerError, "查询用户失败")

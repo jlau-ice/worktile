@@ -1,9 +1,10 @@
 package server
 
 import (
+	"worktile/worktile-query-server/db"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"worktile/worktile-query-server/db"
 )
 
 // NewServer 创建并配置 Echo 实例

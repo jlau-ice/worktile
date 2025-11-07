@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"github.com/labstack/echo/v4"
 	"worktile/worktile-query-server/handlers"
+
+	"github.com/labstack/echo/v4"
 )
 
 // InitRoutes 初始化所有路由
