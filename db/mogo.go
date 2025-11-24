@@ -68,7 +68,7 @@ func GetUsersByName(name string) ([]models.User, error) {
 	return users, nil
 }
 
-// GetWorkloadByUserID 根据用户ID查询工时记录
+// GetWorkloadByUserID 根据用户ID查询工时记录（包含关联的项目和任务信息）
 func GetWorkloadByUserID(dto models.WorkloadDTO) ([]models.WorkloadEntry, int64, error) {
 	collection := Client.Database(dbName).Collection(workloadCol)
 	// 构建过滤器
@@ -82,13 +82,53 @@ func GetWorkloadByUserID(dto models.WorkloadDTO) ([]models.WorkloadEntry, int64,
 	// 分页参数
 	skip := int64((dto.PageNumber - 1) * dto.PageSize)
 
-	// 查询选项：分页 + 排序
-	findOptions := options.Find().
-		SetLimit(int64(dto.PageSize)).
-		SetSkip(skip).
-		SetSort(bson.D{{Key: "reported_at", Value: -1}}) // 按 reported_at 降序排序（最新在前）
-	// 执行查询
-	cursor, err := collection.Find(context.TODO(), filter, findOptions)
+	// 聚合管道
+	pipeline := mongo.Pipeline{
+		// 第一阶段：过滤条件
+		{{Key: "$match", Value: filter}},
+
+		// 第二阶段：关联 mission_projects 表
+		{{Key: "$lookup", Value: bson.M{
+			"from":         "mission_projects",
+			"localField":   "project_id",
+			"foreignField": "_id",
+			"as":           "project_info",
+		}}},
+
+		// 第三阶段：关联 mission_tasks 表
+		{{Key: "$lookup", Value: bson.M{
+			"from":         "mission_tasks",
+			"localField":   "task_id",
+			"foreignField": "_id",
+			"as":           "task_info",
+		}}},
+
+		// 第四阶段：将关联的数组字段展开为单个对象
+		{{Key: "$unwind", Value: bson.M{
+			"path":                       "$project_info",
+			"preserveNullAndEmptyArrays": true,
+		}}},
+		{{Key: "$unwind", Value: bson.M{
+			"path":                       "$task_info",
+			"preserveNullAndEmptyArrays": true,
+		}}},
+
+		// 第五阶段：添加新字段（项目名称和任务标题）
+		{{Key: "$addFields", Value: bson.M{
+			"project_name": "$project_info.name",
+			"task_title":   "$task_info.title",
+		}}},
+
+		// 第六阶段：排序
+		{{Key: "$sort", Value: bson.D{{Key: "reported_at", Value: -1}}}},
+
+		// 第七阶段：分页
+		{{Key: "$skip", Value: skip}},
+		{{Key: "$limit", Value: int64(dto.PageSize)}},
+	}
+
+	// 执行聚合查询
+	cursor, err := collection.Aggregate(context.TODO(), pipeline)
 	if err != nil {
 		return nil, 0, err
 	}

@@ -18,7 +18,22 @@ type WorkloadEntry struct {
 	Duration    float64            `json:"duration" bson:"duration"`
 	CreatedAt   int64              `json:"created_at" bson:"created_at"`
 	UpdatedAt   int64              `json:"updated_at" bson:"updated_at"`
-	ReportedAt  int64              `json:"reported_at" bson:"reported_at"`
+	ProjectID   string             `json:"project_id" bson:"project_id"`
+	TaskID      string             `json:"task_id" bson:"task_id"`
+	ProjectInfo *Project           `json:"project_info,omitempty" bson:"project_info,omitempty"`
+	TaskInfo    *Task              `json:"task_info,omitempty" bson:"task_info,omitempty"`
+}
+
+// Project 结构体用于 mission_projects 集合
+type Project struct {
+	ID   primitive.ObjectID `json:"id" bson:"_id"`
+	Name string             `json:"name" bson:"name"`
+}
+
+// Task 结构体用于 mission_tasks 集合
+type Task struct {
+	ID    primitive.ObjectID `json:"id" bson:"_id"`
+	Title string             `json:"title" bson:"title"`
 }
 
 type PaginatedWorkload struct {
