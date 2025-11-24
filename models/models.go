@@ -20,6 +20,7 @@ type WorkloadEntry struct {
 	UpdatedAt   int64              `json:"updated_at" bson:"updated_at"`
 	ProjectID   string             `json:"project_id" bson:"project_id"`
 	TaskID      string             `json:"task_id" bson:"task_id"`
+	ReportedAt  int64              `json:"reported_at" bson:"reported_at"`
 	ProjectInfo *Project           `json:"project_info,omitempty" bson:"project_info,omitempty"`
 	TaskInfo    *Task              `json:"task_info,omitempty" bson:"task_info,omitempty"`
 }
