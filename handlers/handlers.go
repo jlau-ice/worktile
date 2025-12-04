@@ -61,7 +61,7 @@ func GetWorkloadHandler(c echo.Context) error {
 		// 检查来源 IP 是否在白名单里
 		if !allowedIPs[clientIP] {
 			// 只有你能查，别人查直接报错，或者返回空数据装作没这个人
-			c.Logger().Warnf("IP %s 试图偷看你的工时!", clientIP)
+			log.Warn("IP %s 试图偷看你的工时!" + clientIP)
 			return c.String(403, "权限不足：无法查看该用户工时")
 		}
 	}
