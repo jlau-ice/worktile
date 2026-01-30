@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"net/http"
+	"worktile/worktile-query-server/internal/response"
 	"worktile/worktile-query-server/internal/types/interfaces"
 
 	"github.com/gin-gonic/gin"
@@ -22,16 +22,8 @@ func (h *UserHandler) GetUserList(c *gin.Context) {
 	keyword := c.Query("name")
 	users, err := h.service.SearchUsers(ctx, keyword)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"message": "查询用户失败: " + err.Error(),
-		})
+		response.Error(c, 500, "查询用户失败: "+err.Error())
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"code": 200,
-		"msg":  "success",
-		"data": users,
-	})
+	response.Success(c, users)
 }

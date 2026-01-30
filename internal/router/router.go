@@ -26,13 +26,13 @@ func NewRouter(params Params) *gin.Engine {
 func RegisterUserRoutes(r *gin.RouterGroup, handler *handler.UserHandler) {
 	userRoutes := r.Group("/users")
 	{
-		userRoutes.GET("/", handler.GetUserList)
+		userRoutes.GET("", handler.GetUserList)
 	}
 }
 
 func RegisterWorkloadRoutes(r *gin.RouterGroup, handler *handler.WorkloadHandler) {
 	userRoutes := r.Group("/workload")
 	{
-		userRoutes.GET("/:uid", handler.GetWorkloadList)
+		userRoutes.GET("", handler.GetWorkloadList)
 	}
 }

@@ -14,6 +14,8 @@ type MissionAddonWorkloadEntries struct {
 	ReportedAt  int64              `json:"reported_at" bson:"reported_at"`
 	ProjectInfo *Project           `json:"project_info,omitempty" bson:"project_info,omitempty"`
 	TaskInfo    *Task              `json:"task_info,omitempty" bson:"task_info,omitempty"`
+	ProjectName string             `json:"project_name,omitempty" bson:"project_name,omitempty"`
+	TaskTitle   string             `json:"task_title,omitempty" bson:"task_title,omitempty"`
 }
 
 type WorkloadDTO struct {
