@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState, useEffect } from 'react'
-import { Table } from 'antd'
+import { Table, Tooltip } from 'antd'
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { formatTimestamp } from '@/utils'
 import { useWorkload } from '@/hooks'
@@ -88,9 +88,17 @@ export function WorkloadTable({ selectedUser }: WorkloadTableProps) {
       title: '项目名称',
       dataIndex: 'project_info',
       key: 'project_name',
-      width: 150,
+      width: 200,
       align: 'center',
-      render: (projectInfo) => projectInfo?.name || '-',
+      ellipsis: true,
+      render: (projectInfo) => {
+        const name = projectInfo?.name || '-'
+        return (
+          <Tooltip title={name} placement="topLeft">
+            <span>{name}</span>
+          </Tooltip>
+        )
+      },
     },
     {
       title: '任务名称',
@@ -98,7 +106,15 @@ export function WorkloadTable({ selectedUser }: WorkloadTableProps) {
       key: 'task_title',
       width: 150,
       align: 'center',
-      render: (taskInfo) => taskInfo?.title || '-',
+      ellipsis: true,
+      render: (taskInfo) => {
+        const title = taskInfo?.title || '-'
+        return (
+          <Tooltip title={title} placement="topLeft">
+            <span>{title}</span>
+          </Tooltip>
+        )
+      },
     },
   ]
 
