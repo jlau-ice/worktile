@@ -24,6 +24,7 @@ export function useUserSearch(): UseUserSearchReturn {
 
     setLoading(true)
     setError(null)
+    setUsers([]) // 清空旧数据，确保 UI 状态一致性
 
     try {
       const response = await searchUsers({ name })

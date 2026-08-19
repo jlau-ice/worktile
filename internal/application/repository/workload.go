@@ -63,3 +63,61 @@ func (r *workloadRepository) WorkloadByUid(ctx context.Context, dto types.Worklo
 	}
 	return entries, total, nil
 }
+
+func (r *workloadRepository) WorkloadByContent(ctx context.Context, dto types.WorkloadSearchDTO) ([]types.MissionAddonWorkloadEntries, error) {
+	collection := r.db.Collection("mission_addon_workload_entries")
+
+	// 使用正则表达式进行模糊匹配
+	filter := bson.M{
+		"description": bson.M{
+			"$regex":   dto.Description,
+			"$options": "i", // 不区分大小写
+		},
+	}
+
+	// 构建聚合管道，关联用户、项目和任务信息
+	pipeline := mongo.Pipeline{
+		{{Key: "$match", Value: filter}},
+		{{Key: "$lookup", Value: bson.M{
+			"from":         "users",
+			"localField":   "created_by",
+			"foreignField": "uid",
+			"as":           "user_info",
+		}}},
+		{{Key: "$lookup", Value: bson.M{
+			"from":         "mission_projects",
+			"localField":   "project_id",
+			"foreignField": "_id",
+			"as":           "project_info",
+		}}},
+		{{Key: "$lookup", Value: bson.M{
+			"from":         "mission_tasks",
+			"localField":   "task_id",
+			"foreignField": "_id",
+			"as":           "task_info",
+		}}},
+		{{Key: "$unwind", Value: bson.M{"path": "$user_info", "preserveNullAndEmptyArrays": true}}},
+		{{Key: "$unwind", Value: bson.M{"path": "$project_info", "preserveNullAndEmptyArrays": true}}},
+		{{Key: "$unwind", Value: bson.M{"path": "$task_info", "preserveNullAndEmptyArrays": true}}},
+		{{Key: "$addFields", Value: bson.M{
+			"user_name":    "$user_info.display_name",
+			"project_name": "$project_info.name",
+			"task_title":   "$task_info.title",
+		}}},
+		{{Key: "$sort", Value: bson.D{{Key: "reported_at", Value: -1}}}},
+		{{Key: "$limit", Value: int64(20)}}, // 限制返回前20条
+	}
+
+	cursor, err := collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var entries []types.MissionAddonWorkloadEntries
+	if err := cursor.All(ctx, &entries); err != nil {
+		return nil, err
+	}
+
+	return entries, nil
+}

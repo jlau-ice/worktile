@@ -48,3 +48,24 @@ func (h *WorkloadHandler) GetWorkloadList(c *gin.Context) {
 	}
 	response.Success(c, res)
 }
+
+func (h *WorkloadHandler) SearchWorkloadByContent(c *gin.Context) {
+	ctx := c.Request.Context()
+	description := c.Query("description")
+
+	if description == "" {
+		response.Error(c, 400, "工时内容不能为空")
+		return
+	}
+
+	res, err := h.service.SearchWorkloadByContent(ctx, types.WorkloadSearchDTO{
+		Description: description,
+	})
+
+	if err != nil {
+		response.Error(c, 500, "查询工时失败")
+		return
+	}
+
+	response.Success(c, res)
+}

@@ -16,6 +16,7 @@ import {
   QueryStats as QueryStatsIcon,
   Settings as SettingsIcon,
   People as PeopleIcon,
+  Search as SearchIcon,
 } from '@mui/icons-material'
 import { useNavigate, useLocation } from 'react-router-dom'
 
@@ -30,6 +31,7 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
   { text: '首页', icon: <HomeIcon />, path: '/' },
   { text: '工时查询', icon: <QueryStatsIcon />, path: '/workload' },
+  { text: '内容查询', icon: <SearchIcon />, path: '/content-search' },
   { text: '人员管理', icon: <PeopleIcon />, path: '/users' },
   { text: '系统设置', icon: <SettingsIcon />, path: '/settings' },
 ]

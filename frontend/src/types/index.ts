@@ -34,14 +34,17 @@ export interface WorkloadEntry {
   description: string
   duration: number
   created_at: number
+  created_by: string
   updated_at: number
   reported_at: number
   project_id: string
   task_id: string
   project_info?: Project
   task_info?: Task
+  user_info?: User
   project_name?: string
   task_title?: string
+  user_name?: string
 }
 
 export interface WorkloadParams {

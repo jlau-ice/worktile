@@ -41,7 +41,7 @@ export function useWorkload(selectedUser: User | null): UseWorkloadReturn {
         setLoading(false)
       }
     },
-    [selectedUser]
+    [selectedUser?.uid]
   )
 
   // 当用户变化时重置并获取数据
@@ -54,7 +54,7 @@ export function useWorkload(selectedUser: User | null): UseWorkloadReturn {
       setWorkload([])
       setTotal(0)
     }
-  }, [selectedUser, fetchWorkload])
+  }, [selectedUser?.uid, fetchWorkload])
 
   return {
     workload,

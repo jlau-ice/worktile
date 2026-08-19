@@ -1,5 +1,5 @@
 server:
-  port: 1323
+  port: 28882
   mode: debug
 
 database:

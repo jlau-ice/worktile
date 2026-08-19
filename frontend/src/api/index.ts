@@ -1,2 +1,2 @@
 export { searchUsers } from './user'
-export { getWorkload } from './workload'
+export { getWorkload, searchWorkloadByContent } from './workload'

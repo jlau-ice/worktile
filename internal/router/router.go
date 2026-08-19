@@ -34,5 +34,6 @@ func RegisterWorkloadRoutes(r *gin.RouterGroup, handler *handler.WorkloadHandler
 	userRoutes := r.Group("/workload")
 	{
 		userRoutes.GET("", handler.GetWorkloadList)
+		userRoutes.GET("/search", handler.SearchWorkloadByContent)
 	}
 }

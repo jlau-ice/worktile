@@ -35,3 +35,7 @@ func (s *workloadService) SearchWorkload(ctx context.Context, dto types.Workload
 		PageNumber: dto.PageNumber,
 	}, nil
 }
+
+func (s *workloadService) SearchWorkloadByContent(ctx context.Context, dto types.WorkloadSearchDTO) ([]types.MissionAddonWorkloadEntries, error) {
+	return s.repo.WorkloadByContent(ctx, dto)
+}
