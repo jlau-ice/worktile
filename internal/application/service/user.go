@@ -24,3 +24,13 @@ func (s *userService) SearchUsers(ctx context.Context, name string) ([]types.Use
 	}
 	return s.repo.FetchByName(ctx, name)
 }
+
+func (s *userService) GetUsersByPage(ctx context.Context, dto types.UserPageDTO) (*types.PaginatedUsers, error) {
+	if dto.PageSize <= 0 {
+		dto.PageSize = 10
+	}
+	if dto.PageNumber <= 0 {
+		dto.PageNumber = 1
+	}
+	return s.repo.FetchByPage(ctx, dto)
+}

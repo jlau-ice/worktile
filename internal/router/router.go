@@ -15,6 +15,8 @@ type Params struct {
 
 func NewRouter(params Params) *gin.Engine {
 	r := gin.New()
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
 	v1 := r.Group("/api")
 	{
 		RegisterUserRoutes(v1, params.UserHandler)
@@ -27,6 +29,7 @@ func RegisterUserRoutes(r *gin.RouterGroup, handler *handler.UserHandler) {
 	userRoutes := r.Group("/users")
 	{
 		userRoutes.GET("", handler.GetUserList)
+		userRoutes.GET("/page", handler.GetUsersByPage)
 	}
 }
 

@@ -10,10 +10,20 @@ export interface User {
   id: string
   display_name: string
   uid: string
+  title?: string
+  gender?: string
+  department?: string
+  department_name?: string
+  status: number
+  is_deleted: number
+  disabled_at: number
 }
 
 export interface UserSearchParams {
   name: string
+  status?: number
+  page_number?: number
+  page_size?: number
 }
 
 // 项目相关类型
@@ -55,6 +65,13 @@ export interface WorkloadParams {
 
 export interface PaginatedWorkload {
   data: WorkloadEntry[]
+  total: number
+  page_size: number
+  page_number: number
+}
+
+export interface PaginatedUsers {
+  data: User[]
   total: number
   page_size: number
   page_number: number

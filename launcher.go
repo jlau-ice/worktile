@@ -38,6 +38,10 @@ func main() {
 	// 3. 启动后端
 	startService("go", []string{"run", "./cmd/server/main.go"}, ".", "backend.log")
 
+	// 等待后端服务启动完成
+	log.Printf("等待后端服务启动...")
+	waitForPort(BACKEND_PORT, 30*time.Second)
+
 	// 4. 启动前端
 	// 注意：Windows 下执行 npm 建议用 npm.cmd
 	startService("cmd", []string{"/c", "npm run dev"}, "./frontend", "frontend.log")
@@ -75,6 +79,20 @@ func killProcessOnPort(port string) {
 	} else {
 		log.Printf("已成功关闭端口 %s 上的旧服务", port)
 	}
+}
+
+// waitForPort 等待指定端口变为可用状态（服务已启动）
+func waitForPort(port string, timeout time.Duration) bool {
+	deadline := time.Now().Add(timeout)
+	for time.Now().Before(deadline) {
+		if isPortInUse(port) {
+			log.Printf("端口 %s 已就绪", port)
+			return true
+		}
+		time.Sleep(500 * time.Millisecond)
+	}
+	log.Printf("等待端口 %s 超时", port)
+	return false
 }
 
 func startService(name string, args []string, dir string, logFile string) {
